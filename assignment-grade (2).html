@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment Grading | Nexus LMS</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { padding: 1.5rem; }
+        .grade-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
+        .grade-header h2 { margin: 0; }
+        .grade-summary { color: var(--text-muted); margin-bottom: 1rem; }
+        table { margin: 0; }
+        .marks-input { width: 80px; padding: 4px 8px; font-size: 13px; }
+        .feedback-input { width: 100%; padding: 4px 8px; font-size: 12px; }
+        .btn-sm { padding: 4px 10px; font-size: 12px; }
+        .hide { display: none !important; }
+        .loading { text-align: center; padding: 3rem; color: var(--text-muted); }
+        .preview-content img { max-width: 100%; max-height: 70vh; border-radius: 8px; display: block; margin: 0 auto; }
+        .preview-content video { max-width: 100%; max-height: 70vh; border-radius: 8px; display: block; margin: 0 auto; }
+        .preview-content audio { width: 100%; margin: 1rem 0; }
+        .preview-content iframe { width: 100%; height: 70vh; border: none; border-radius: 8px; background: white; }
+        .preview-content pre { background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; max-height: 65vh; overflow: auto; font-size: 0.85rem; line-height: 1.5; white-space: pre-wrap; word-break: break-word; margin: 0; }
+        .back-btn { text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+    </style>
+</head>
+<body>
+
+    <div id="notification"></div>
+
+    <!-- Login Required -->
+    <div id="loginRequired" class="hide" style="text-align:center; padding: 3rem;">
+        <h2>🔒 Login Required</h2>
+        <p style="color: var(--text-muted); margin: 1rem 0;">Please login as Staff to access this page.</p>
+        <a href="/" class="btn" style="text-decoration:none;">← Back to Login</a>
+    </div>
+
+    <!-- Main Grading Page -->
+    <div id="mainContent" class="hide">
+        <div class="grade-header">
+            <div>
+                <h2 id="assignmentTitle">Assignment</h2>
+                <p class="grade-summary" id="gradeSummary"></p>
+            </div>
+            <div style="display:flex; gap:0.75rem; align-items:center;">
+                <span id="roleBadge" class="badge badge-success"></span>
+                <a href="/" class="btn btn-secondary back-btn">← Back to Dashboard</a>
+                <button class="btn btn-secondary" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <!-- Submissions Table -->
+        <div class="glass-panel">
+            <div style="overflow-x:auto;">
+                <table id="submissionsTable">
+                    <thead>
+                        <tr>
+                            <th>D Number</th>
+                            <th>Name</th>
+                            <th>Submitted At</th>
+                            <th>File</th>
+                            <th>Marks</th>
+                            <th>Feedback & Grade</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====================================================================== -->
+    <!-- FILE PREVIEW MODAL                                                     -->
+    <!-- ====================================================================== -->
+    <div id="filePreviewModal" class="modal-overlay hide" onclick="if(event.target===this)closeFilePreview();">
+        <div class="modal-content" style="max-width: 800px; max-height: 85vh; overflow-y: auto;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                <h3 id="filePreviewTitle" style="margin:0;">File Preview</h3>
+                <span class="modal-close" onclick="closeFilePreview()">&times;</span>
+            </div>
+            <div id="filePreviewContent" class="preview-content"></div>
+            <div style="text-align:center;margin-top:1rem;">
+                <a id="filePreviewDownload" href="#" target="_blank" class="btn btn-secondary" style="text-decoration:none;">⬇️ Download</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =====================
+        // Helpers
+        // =====================
+        function showNotification(message, isError = false) {
+            const notif = document.getElementById('notification');
+            notif.textContent = message;
+            notif.style.borderColor = isError ? 'var(--danger)' : 'var(--success)';
+            notif.classList.add('show');
+            setTimeout(() => { notif.classList.remove('show'); }, 3000);
+        }
+
+        async function apiCall(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    headers: options.body instanceof FormData ? {} : { 'Content-Type': 'application/json' },
+                    ...options,
+                    body: options.body instanceof FormData ? options.body : (options.body ? JSON.stringify(options.body) : undefined)
+                });
+                const text = await response.text();
+                let data;
+                try { data = JSON.parse(text); } catch(e) { throw new Error('Server error'); }
+                if (!response.ok) throw new Error(data.error || 'API Error');
+                return data;
+            } catch (err) {
+                showNotification(err.message, true);
+                throw err;
+            }
+        }
+
+        // =====================
+        // Session & Auth
+        // =====================
+        async function checkSession() {
+            try {
+                const res = await apiCall('/api/session');
+                if (res.user.role !== 'staff') {
+                    document.getElementById('loginRequired').classList.remove('hide');
+                    return;
+                }
+                document.getElementById('roleBadge').textContent = res.user.role.toUpperCase();
+                document.getElementById('mainContent').classList.remove('hide');
+                initPage();
+            } catch (e) {
+                document.getElementById('loginRequired').classList.remove('hide');
+            }
+        }
+
+        async function logout() {
+            try { await apiCall('/api/logout', { method: 'POST' }); } catch(e) {}
+            window.location.href = '/';
+        }
+
+        // =====================
+        // Page Initialization
+        // =====================
+        function getQueryParam(name) {
+            const url = new URL(window.location.href);
+            return url.searchParams.get(name);
+        }
+
+        let currentAssignmentId = null;
+
+        async function initPage() {
+            const assignmentId = getQueryParam('id');
+            const title = getQueryParam('title');
+
+            if (!assignmentId) {
+                showNotification('No assignment ID provided', true);
+                return;
+            }
+
+            currentAssignmentId = assignmentId;
+            document.getElementById('assignmentTitle').textContent = title ? `📋 ${decodeURIComponent(title)}` : '📋 Assignment';
+
+            await loadSubmissions(assignmentId);
+        }
+
+        // =====================
+        // Load Submissions
+        // =====================
+        async function loadSubmissions(assignmentId) {
+            const tbody = document.querySelector('#submissionsTable tbody');
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem; color:var(--text-muted);">⏳ Loading submissions...</td></tr>';
+
+            try {
+                const data = await apiCall(`/api/staff/assignment/${assignmentId}/submissions`);
+
+                const dueDateStr = data.due_date ? new Date(data.due_date).toLocaleString() : 'No deadline';
+                document.getElementById('gradeSummary').textContent = `${data.submitted} out of ${data.total} students submitted · Max Marks: ${data.max_marks || 100} · 📅 Due: ${dueDateStr}`;
+
+                if (data.submissions.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);">No submissions yet.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.submissions.map(s => {
+                    const isOnTime = s.is_on_time === true;
+                    const isLate = s.is_on_time === false;
+                    const timingBadge = isOnTime
+                        ? '<span style="background:rgba(16,185,129,0.15); color:var(--success); padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600;">✅ On Time</span>'
+                        : isLate
+                            ? '<span style="background:rgba(239,68,68,0.15); color:var(--danger); padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600;">⏰ Late</span>'
+                            : '';
+                    
+                    return `
+                    <tr>
+                        <td><strong>${s.username}</strong></td>
+                        <td>${s.full_name || '-'}</td>
+                        <td style="font-size:0.8rem;">
+                            ${new Date(s.submitted_at).toLocaleString()}
+                            <div style="margin-top:4px;">${timingBadge}</div>
+                        </td>
+                        <td><button class="btn btn-secondary btn-sm" onclick="previewFile('${s.file_url}', '${(s.full_name || s.username).replace(/'/g, "\\'")}')">👁️ Preview</button></td>
+                        <td style="text-align:center;">
+                            ${s.marks !== null && s.marks !== undefined
+                                ? `<span style="font-weight:700; color:${s.marks >= (data.max_marks || 100) / 2 ? 'var(--success)' : 'var(--danger)'}">${s.marks}/${data.max_marks || 100}</span>`
+                                : '<span style="color:var(--text-muted); font-size:0.8rem;">Not graded</span>'
+                            }
+                        </td>
+                        <td>
+                            <div style="display:flex; flex-direction:column; gap:4px;">
+                                <div style="display:flex; gap:4px; align-items:center;">
+                                    <input type="number" id="gradeMarks_${s.submission_id}" class="form-control marks-input" placeholder="Marks" min="0" max="${data.max_marks || 100}" step="0.5" value="${s.marks !== null && s.marks !== undefined ? s.marks : ''}">
+                                    <button class="btn btn-secondary btn-sm" onclick="gradeSubmission(${s.submission_id}, ${data.max_marks || 100})">Save</button>
+                                    ${s.marks !== null && s.marks !== undefined ? `<button class="btn btn-danger btn-sm" onclick="removeGrade(${s.submission_id})">✕</button>` : ''}
+                                </div>
+                                <input type="text" id="gradeFeedback_${s.submission_id}" class="form-control feedback-input" placeholder="Feedback (optional)" value="${s.feedback || ''}">
+                                ${s.graded_at ? `<div style="font-size:10px; color:var(--text-muted);">Graded: ${new Date(s.graded_at).toLocaleString()}</div>` : ''}
+                            </div>
+                        </td>
+                    </tr>
+                    `;
+                }).join('');
+            } catch (e) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--danger);">Failed to load submissions.</td></tr>';
+            }
+        }
+
+        // =====================
+        // Grading Functions
+        // =====================
+        async function gradeSubmission(submissionId, maxMarks) {
+            const marks = document.getElementById(`gradeMarks_${submissionId}`).value;
+            const feedback = document.getElementById(`gradeFeedback_${submissionId}`).value;
+
+            if (!marks) return showNotification('Please enter marks', true);
+
+            const marksNum = parseFloat(marks);
+            if (isNaN(marksNum) || marksNum < 0 || marksNum > maxMarks) {
+                return showNotification(`Marks must be between 0 and ${maxMarks}`, true);
+            }
+
+            try {
+                const res = await apiCall(`/api/staff/submission/${submissionId}/grade`, {
+                    method: 'POST',
+                    body: { marks: marksNum, feedback: feedback || null }
+                });
+                showNotification(res.message);
+                if (currentAssignmentId) loadSubmissions(currentAssignmentId);
+            } catch(e) {}
+        }
+
+        async function removeGrade(submissionId) {
+            if (!confirm('Remove this grade?')) return;
+            try {
+                const res = await apiCall(`/api/staff/submission/${submissionId}/grade`, { method: 'DELETE' });
+                showNotification(res.message);
+                if (currentAssignmentId) loadSubmissions(currentAssignmentId);
+            } catch(e) {}
+        }
+
+        // =====================
+        // File Preview Overlay
+        // =====================
+        function previewFile(fileUrl, studentName) {
+            const modal = document.getElementById('filePreviewModal');
+            const title = document.getElementById('filePreviewTitle');
+            const content = document.getElementById('filePreviewContent');
+            const downloadLink = document.getElementById('filePreviewDownload');
+
+            title.textContent = `📄 ${studentName}'s Submission`;
+            downloadLink.href = fileUrl;
+
+            const ext = fileUrl.split('.').pop().toLowerCase();
+            const imageExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg', 'ico', 'tiff'];
+            const videoExts = ['mp4', 'webm', 'ogg', 'mov', 'avi', 'mkv', 'm4v', '3gp'];
+            const audioExts = ['mp3', 'wav', 'm4a', 'aac', 'opus', 'flac', 'ogg'];
+            const textExts = ['txt', 'csv', 'tsv', 'json', 'xml', 'yaml', 'yml', 'log', 'ini', 'cfg', 'conf', 'md', 'html', 'htm', 'css', 'js', 'mjs', 'ts', 'jsx', 'tsx', 'py', 'java', 'c', 'cpp', 'h', 'hpp', 'php', 'rb', 'go', 'rs', 'sh', 'bat', 'sql', 'env', 'gitignore', 'vcf'];
+            const officeExts = ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'odt', 'ods', 'odp'];
+
+            // 1. Images
+            if (imageExts.includes(ext)) {
+                content.innerHTML = `<img src="${fileUrl}">`;
+                modal.classList.remove('hide');
+                return;
+            }
+
+            // 2. Videos
+            if (videoExts.includes(ext)) {
+                content.innerHTML = `<video src="${fileUrl}" controls></video>`;
+                modal.classList.remove('hide');
+                return;
+            }
+
+            // 3. Audio
+            if (audioExts.includes(ext)) {
+                content.innerHTML = `<audio src="${fileUrl}" controls></audio>`;
+                modal.classList.remove('hide');
+                return;
+            }
+
+            // 4. PDF
+            if (ext === 'pdf') {
+                content.innerHTML = `<iframe src="${fileUrl}"></iframe>`;
+                modal.classList.remove('hide');
+                return;
+            }
+
+            // 5. Text files - fetch and display
+            if (textExts.includes(ext)) {
+                content.innerHTML = '<div style="text-align:center; padding:1rem; color:var(--text-muted);">⏳ Loading file content...</div>';
+                modal.classList.remove('hide');
+
+                fetch(fileUrl)
+                    .then(res => {
+                        if (!res.ok) throw new Error('Failed to load file');
+                        return res.text();
+                    })
+                    .then(text => {
+                        content.innerHTML = '';
+                        const pre = document.createElement('pre');
+                        pre.textContent = text;
+                        content.appendChild(pre);
+                    })
+                    .catch(() => {
+                        content.innerHTML = `
+                            <div style="text-align:center; padding:2rem;">
+                                <div style="font-size:3rem; margin-bottom:1rem;">📄</div>
+                                <p style="color:var(--text-muted); margin-bottom:1rem;">Could not load file content directly.</p>
+                                <a href="${fileUrl}" target="_blank" class="btn" style="text-decoration:none;">⬇️ Download File</a>
+                            </div>
+                        `;
+                    });
+                return;
+            }
+
+            // 6. Office docs - Google Docs viewer
+            if (officeExts.includes(ext)) {
+                const viewerUrl = 'https://docs.google.com/viewer?url=' + encodeURIComponent(window.location.origin + fileUrl) + '&embedded=true';
+                content.innerHTML = `<iframe src="${viewerUrl}"></iframe>`;
+                content.innerHTML += '<div style="text-align:center; margin-top:0.5rem; font-size:0.85rem; color:var(--text-muted);">If preview doesn\'t load, use the ⬇️ Download button below.</div>';
+                modal.classList.remove('hide');
+                return;
+            }
+
+            // 7. Fallback
+            content.innerHTML = `<iframe src="${fileUrl}"></iframe>`;
+            content.innerHTML += '<div style="text-align:center; margin-top:0.5rem; font-size:0.85rem; color:var(--text-muted);">If preview doesn\'t load, use the ⬇️ Download button below.</div>';
+            modal.classList.remove('hide');
+        }
+
+        function closeFilePreview() {
+            document.getElementById('filePreviewModal').classList.add('hide');
+            document.getElementById('filePreviewContent').innerHTML = '';
+        }
+
+        // =====================
+        // Start
+        // =====================
+        window.onload = checkSession;
+    </script>
+</body>
+</html>

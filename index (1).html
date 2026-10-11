@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content, maximum-scale=1.0">
+    <title>Nexus LMS | Next Generation Learning</title>
+    <meta name="description" content="Next generation learning management system.">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css.css">
+    <link rel="stylesheet" href="mobile.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons&display=swap">
+</head>
+<body>
+
+    <header class="header hidden" id="mainHeader">
+        <div style="display:flex;align-items:center;gap:8px;">
+            <img src="./uploads/sjc_logo_nobg.png" alt="Nexus LMS" id="headerLogo" style="height:32px;width:32px;border-radius:8px;object-fit:contain;">
+            <h1 id="headerTitle" style="margin:0;font-size:18px;">Nexus LMS</h1>
+        </div>
+        <div style="display:flex; gap:1rem; align-items:center;">
+            <span id="userRoleBadge" class="badge badge-success"></span>
+            <button class="btn btn-secondary" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <!-- Notification Toast -->
+    <div id="notification"></div>
+
+    <main class="container">
+        <!-- Auth Section -->
+                <section id="authSection" class="login-page-wrapper">
+            <!-- Top Right Small Logo (Desktop) -->
+            <div class="logo-top-right" id="mobileSideLogo">
+                <img src="./uploads/sjc_logo_nobg.png" alt="Nexus LMS" class="brand-logo-small" id="topRightLogo">
+            </div>
+
+            <div class="login-container">
+                <!-- Left Side: Brand Panel Logo -->
+                <div class="brand-panel" id="brandPanel">
+                    <img src="./lll.png" alt="Nexus LMS" class="brand-logo" id="brandLogo">
+                </div>
+
+                <!-- Right Side: Login Form -->
+                <div class="form-panel">
+                    <div class="form-content">
+                        
+                        <div id="loginForm">
+                            <h2 class="welcome-text">Welcome Back! <span class="wave-emoji"></span></h2>
+                            <p class="subtitle-text">Login to continue to your St.Joshep's Account</p>
+
+                            <form onsubmit="event.preventDefault(); login();">
+                                <!-- Email / Username Input -->
+                                <div class="input-group">
+                                    <label for="loginUser">Email / Username</label>
+                                    <div class="input-wrapper">
+                                        <input type="text" id="loginUser" placeholder="Username" required>
+                                    </div>
+                                </div>
+
+                                <!-- Password Input -->
+                                <div class="input-group">
+                                    <label for="loginPass">Password</label>
+                                    <div class="input-wrapper">
+                                        <input type="password" id="loginPass" placeholder="Password" required>
+                                    </div>
+                                </div>
+
+                                <!-- Options Row -->
+                                <div class="options-row">
+                                    <label class="remember-me">
+                                        <input type="checkbox">
+                                        <span>Remember me</span>
+                                    </label>
+                                </div>
+
+                                <!-- Login Button -->
+                                <button type="submit" class="login-btn">
+                                    <span class="login-icon"></span> Login
+                                </button>
+                            </form>
+                            
+                            <p class="auth-toggle-link">
+                                New student? <a href="#" onclick="toggleAuth()">Register here</a>
+                            </p>
+                        </div>
+
+                        <div id="registerForm" class="hidden">
+                            <h2 class="welcome-text">Create Account</h2>
+                            
+                            <form onsubmit="event.preventDefault(); register();">
+                                <div class="input-group">
+                                    <label for="regUser">Username</label>
+                                    <div class="input-wrapper">
+                                        <input type="text" id="regUser" placeholder="Enter Your D.no" required>
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label for="regPass">Password</label>
+                                    <div class="input-wrapper">
+                                        <input type="password" id="regPass" placeholder="Enter your ERP password" required>
+                                    </div>
+                                </div>
+                                <button type="submit" class="login-btn">
+                                    <span class="login-icon"></span> Register Account
+                                </button>
+                            </form>
+                            
+                            <p class="auth-toggle-link">
+                                Already have an account? <a href="#" onclick="toggleAuth()">Sign in</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====================================================================== -->
+        <!-- ADMIN DASHBOARD                                                        -->
+        <!-- ====================================================================== -->
+        <section id="adminSection" class="hidden animate-fade-in">
+            <h2 style="margin-bottom: 2rem;">Admin Dashboard</h2>
+            <div class="grid">
+                <!-- Create Staff -->
+                <div class="card">
+                    <h3>Create Staff Account</h3>
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="staffUser" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="staffPass" class="form-control">
+                    </div>
+                    <button class="btn" onclick="createStaff()">Create Staff</button>
+                </div>
+                
+                <!-- Create Class -->
+                <div class="card">
+                    <h3>Manage Classes</h3>
+                    <div class="form-group">
+                        <label>Class Name (e.g. 1st Year)</label>
+                        <input type="text" id="className" class="form-control">
+                    </div>
+                    <button class="btn" onclick="createClass()">Create Class</button>
+                </div>
+
+                <!-- Assign Mentor -->
+                <div class="card">
+                    <h3>Assign Mentor to Class</h3>
+                    <div class="form-group">
+                        <label>Select Class</label>
+                        <select id="mentorClassSelect" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Select Staff (Mentor)</label>
+                        <select id="mentorStaffSelect" class="form-control"></select>
+                    </div>
+                    <div id="currentMentorDisplay" style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.5rem;"></div>
+                    <div style="display:flex;gap:0.5rem;">
+                        <button class="btn" onclick="assignMentor()">Assign Mentor</button>
+                        <button class="btn btn-secondary" onclick="removeMentor()">Remove</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Approvals -->
+            <div class="glass-panel" style="margin-top: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+                    <h3 style="margin: 0;">Student Management</h3>
+                    <div class="input-wrapper" style="max-width: 300px; width: 100%; position: relative;">
+                        <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; pointer-events: none;"></span>
+                        <input type="text" id="adminStudentSearch" class="form-control" placeholder="Search Username..." onkeyup="filterAdminStudents()" style="padding-left: 2.5rem;">
+                    </div>
+                </div>
+                <div style="overflow-y: auto; overflow-x: auto; max-height: 250px; border: 1px solid var(--card-border); border-radius: 8px;">
+                    <table id="adminStudentsTable" style="margin: 0;">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Name</th>
+                                <th>Class</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Staff Accounts -->
+            <div class="glass-panel" style="margin-top: 2rem;">
+                <h3>Staff Accounts</h3>
+                <div style="overflow-y: auto; overflow-x: auto; max-height: 250px; border: 1px solid var(--card-border); border-radius: 8px;">
+                    <table id="adminStaffTable" style="margin: 0;">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Name</th>
+                                <th>Staff ID</th>
+                                <th>Age</th>
+                                <th>Aadhaar No</th>
+                                <th>Phone No</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====================================================================== -->
+        <!-- STAFF DASHBOARD                                                        -->
+        <!-- ====================================================================== -->
+        <section id="staffSection" class="hidden animate-fade-in">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+                <h2 style="margin: 0;">Staff Dashboard</h2>
+            </div>
+
+            <!-- Quick Access Navigation Toolbar -->
+            <div class="glass-panel" style="margin-bottom: 1.5rem; padding: 18px 24px;">
+                <h4 style="margin-bottom: 0.75rem; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">Staff Tools & Features</h4>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="staff-nav-btn active" onclick="showStaffFeature('materials', this)">Upload Material</button>
+                    <button class="staff-nav-btn" onclick="showStaffFeature('profile', this)">My Profile</button>
+                    <button class="staff-nav-btn" onclick="showStaffFeature('attendance', this)">Mark Attendance</button>
+                    <button class="staff-nav-btn" onclick="showStaffFeature('forms', this)">Share Form</button>
+                    <button class="staff-nav-btn" onclick="showStaffFeature('assignments', this)">Create Assignment</button>
+                    <button class="staff-nav-btn" onclick="showStaffFeature('quizzes', this)">Create Quiz</button>
+                    <button class="staff-nav-btn" onclick="showStaffFeature('weekCourses', this)">Week Courses</button>
+                    <button class="staff-nav-btn" onclick="showStaffFeature('leaves', this)">Leave Management</button>
+                    <button class="staff-nav-btn" onclick="showStaffFeature('inbox', this)">Inbox</button>
+                    <button class="staff-nav-btn" onclick="showStaffFeature('students', this)">Enrolled Students</button>
+                    <button class="staff-nav-btn" onclick="showStaffFeature('staffList', this)">Enrolled Staff</button>
+                </div>
+            </div>
+
+            <!-- Feature 1: Materials -->
+            <div id="staffFeatureMaterials">
+                <!-- Upload Material -->
+                <div class="glass-panel" style="margin-top: 1rem;">
+                    <h3>Upload Material</h3>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
+                        <div class="form-group" style="flex: 1; min-width: 150px;">
+                            <label>Title</label>
+                            <input type="text" id="matTitle" class="form-control" placeholder="e.g. Chapter 1 Notes">
+                        </div>
+                        <div class="form-group" style="flex: 1; min-width: 150px;">
+                            <label>Class</label>
+                            <select id="matClass" class="form-control">
+                                <option value="">Select a class</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="flex: 1; min-width: 200px;">
+                            <label>File</label>
+                            <input type="file" id="matFile" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <button class="btn" onclick="uploadMaterial()">Upload Material</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- My Materials -->
+                <div class="glass-panel" style="margin-top: 1rem;">
+                    <h3>My Materials</h3>
+                    <ul id="staffMaterialsList" style="list-style: none; padding: 0;"></ul>
+                </div>
+            </div>
+
+            <!-- Feature 2: Attendance -->
+            <div id="staffFeatureAttendance" class="glass-panel" style="margin-top: 1rem;">
+                <h3>Mark Attendance</h3>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end; margin-bottom: 1rem;">
+                    <div class="form-group" style="flex:1; min-width:150px;">
+                        <label>Class</label>
+                        <select id="attendanceClass" class="form-control" onchange="loadAttendanceStudents()">
+                            <option value="">Select class</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex:1; min-width:150px;">
+                        <label>Date</label>
+                        <input type="date" id="attendanceDate" class="form-control" onchange="loadAttendanceStudents()">
+                    </div>
+                    <div class="form-group" style="flex:1; min-width:150px;">
+                        <label>Day Order</label>
+                        <div style="display:flex;gap:4px;">
+                            <button class="day-btn" onclick="selectDayOrder(this, 'A')">A</button>
+                            <button class="day-btn" onclick="selectDayOrder(this, 'B')">B</button>
+                            <button class="day-btn" onclick="selectDayOrder(this, 'C')">C</button>
+                            <button class="day-btn" onclick="selectDayOrder(this, 'D')">D</button>
+                            <button class="day-btn" onclick="selectDayOrder(this, 'E')">E</button>
+                            <button class="day-btn" onclick="selectDayOrder(this, 'F')">F</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="attendanceListContainer" class="hidden">
+                    <div id="attendanceRecordedNote" class="hidden" style="margin-top:0.5rem;padding:0.6rem 0.9rem;border-radius:8px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.3);color:#059669;font-size:0.85rem;font-weight:600;"></div>
+                    <div class="fixed-scroll-container" style="margin-top: 0.5rem;">
+                        <table id="attendanceTable" style="margin:0;">
+                            <thead>
+                                <tr>
+                                    <th>Student Name</th>
+                                    <th>Result</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <button id="attendanceSubmitBtn" class="btn" style="margin-top:1rem;" onclick="submitAttendance()">Submit Attendance</button>
+                </div>
+            </div>
+
+            <!-- Feature 3: Share Forms -->
+            <div id="staffFeatureForms" class="glass-panel" style="margin-top: 1rem;">
+                <h3>Share Forms</h3>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end; margin-bottom: 1rem;">
+                    <div class="form-group" style="flex:1; min-width:150px;">
+                        <label>Form Title</label>
+                        <input type="text" id="formTitle" class="form-control" placeholder="e.g. Feedback Form">
+                    </div>
+                    <div class="form-group" style="flex:1; min-width:200px;">
+                        <label>Form Link</label>
+                        <input type="url" id="formLink" class="form-control" placeholder="https://forms.google.com/...">
+                    </div>
+                    <div class="form-group" style="flex:1; min-width:150px;">
+                        <label>Class (Optional)</label>
+                        <select id="formClass" class="form-control">
+                            <option value="">All Classes</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn" onclick="createForm()">Share Form</button>
+                    </div>
+                </div>
+                <ul id="staffFormsList" style="list-style: none; padding: 0;"></ul>
+            </div>
+
+            <!-- Feature 4: Assignments -->
+            <div id="staffFeatureAssignments" class="glass-panel" style="margin-top: 1rem;">
+                <h3>Create Assignment</h3>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end; margin-bottom: 1rem;">
+                    <div class="form-group" style="flex:1; min-width:150px;">
+                        <label>Assignment Title</label>
+                        <input type="text" id="assignTitle" class="form-control" placeholder="e.g. Chapter 1 Homework">
+                    </div>
+                    <div class="form-group" style="flex:1; min-width:150px;">
+                        <label>Class</label>
+                        <select id="assignClass" class="form-control">
+                            <option value="">Select class</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex:1; min-width:120px;">
+                        <label>Max Marks</label>
+                        <input type="number" id="assignMaxMarks" class="form-control" value="100" min="1" max="1000" placeholder="100">
+                    </div>
+                    <div class="form-group date-setting-box" style="flex:1; min-width:285px;">
+                        <label class="dsb-label">Due Date</label>
+                        <div class="dsb-row">
+                            <div class="dsb-field">
+                                <select id="dueDay" class="form-control"><option value="">Day</option></select>
+                            </div>
+                            <div class="dsb-field">
+                                <select id="dueMonth" class="form-control"><option value="">Month</option></select>
+                            </div>
+                            <div class="dsb-field">
+                                <select id="dueYear" class="form-control"><option value="">Year</option></select>
+                            </div>
+                            <div class="dsb-field wide">
+                                <input type="time" id="dueTime" class="form-control" value="23:59" title="Default: end of day">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn" onclick="createAssignment()">Create</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Description (Optional)</label>
+                    <textarea id="assignDesc" class="form-control" rows="2" placeholder="Assignment description..."></textarea>
+                </div>
+                <h4 style="margin-top:1rem;">My Assignments</h4>
+                <ul id="staffAssignmentsList" style="list-style: none; padding: 0;"></ul>
+            </div>
+
+            <!-- Submission Detail Panel -->
+            <div id="submissionDetailPanel" class="glass-panel hidden" style="margin-top: 1rem;">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <h3 id="subDetailTitle">Submissions</h3>
+                    <button class="btn btn-secondary" onclick="document.getElementById('submissionDetailPanel').classList.add('hidden')">Close</button>
+                </div>
+                <p id="subDetailSummary" style="color:var(--text-muted);margin-bottom:0.5rem;"></p>
+                <div style="overflow-x:auto;">
+                    <table id="submissionsTable" style="margin:0;">
+                        <thead>
+                            <tr>
+                                <th>D Number</th>
+                                <th>Name</th>
+                                <th>Submitted At</th>
+                                <th>File</th>
+                                <th>Marks</th>
+                                <th>Feedback & Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Feature 5: Quizzes -->
+            <div id="staffFeatureQuizzes">
+                <div class="glass-panel" style="margin-top: 1rem;">
+                    <h3>Create Quiz</h3>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end; margin-bottom: 1rem;">
+                        <div class="form-group" style="flex:1; min-width:150px;">
+                            <label>Quiz Title</label>
+                            <input type="text" id="quizTitle" class="form-control" placeholder="e.g. Chapter 1 Test">
+                        </div>
+                        <div class="form-group" style="flex:1; min-width:150px;">
+                            <label>Class</label>
+                            <select id="quizClass" class="form-control">
+                                <option value="">Select class</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="flex:1; min-width:140px;">
+                            <label>Quiz Password (Optional)</label>
+                            <input type="text" id="quizPassword" class="form-control" placeholder="e.g. test123">
+                        </div>
+                        <div class="form-group" style="flex:2; min-width:200px;">
+                            <label>Description (Optional)</label>
+                            <input type="text" id="quizDesc" class="form-control" placeholder="Quiz description...">
+                        </div>
+                    </div>
+                    <h4 style="margin-bottom:0.5rem;">Questions</h4>
+                    <div id="quizQuestionsContainer" class="fixed-scroll-container" style="max-height:220px;margin-bottom:0.5rem;"></div>
+                    <button class="btn btn-secondary" onclick="addQuizQuestion()" style="margin-bottom:1rem;">+ Add Question</button>
+                    <button class="btn" onclick="createQuiz()">Create Quiz</button>
+                </div>
+
+                <!-- My Quizzes (Staff) -->
+                <div class="glass-panel" style="margin-top: 1rem;">
+                    <h3>My Quizzes</h3>
+                    <ul id="staffQuizzesList" style="list-style: none; padding: 0;"></ul>
+                </div>
+            </div>
+
+            <!-- Feature 6: Staff Inbox -->
+            <div id="staffFeatureInbox" class="glass-panel" style="margin-top: 1rem;">
+                <h3>Inbox <span id="staffUnreadBadge" class="badge badge-danger" style="display:none;font-size:0.7rem;vertical-align:middle;"></span></h3>
+                <p id="staffInboxEmpty" class="hidden" style="color:var(--text-muted);">No messages received yet.</p>
+                <ul id="staffInboxMessages" style="list-style: none; padding: 0;"></ul>
+            </div>
+
+            <!-- Feature 7: Enrolled Students List -->
+            <div id="staffFeatureStudents" class="glass-panel" style="margin-top: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                    <h3 style="margin:0;">Enrolled Students</h3>
+                    <div class="input-wrapper" style="max-width: 300px; width: 100%; position: relative;">
+                        <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; pointer-events: none;"></span>
+                        <input type="text" id="studentSearch" class="form-control" placeholder="Search Students..." onkeyup="filterStudents()" style="padding-left: 2.5rem;">
+                    </div>
+                </div>
+                <div class="fixed-scroll-container" style="margin-top: 0.5rem;">
+                    <table id="staffStudentsTable" style="margin:0;">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Chat</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Feature 9: Staff Profile -->
+            <div id="staffFeatureProfile" class="glass-panel hidden" style="margin-top: 1rem;">
+                <h3>My Profile</h3>
+
+                <!-- Profile Edit Section (shown when no profile exists yet) -->
+                <div id="staffProfileEditSection">
+                    <p style="color: var(--text-muted); margin-bottom: 1rem;">Complete your profile details below.</p>
+                    <div style="display: flex; flex-direction: column; gap: 1rem; max-width: 500px;">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="staffProfileName" class="form-control" placeholder="Enter Full Name">
+                        </div>
+                        <div class="form-group">
+                            <label>Staff ID / ERP ID</label>
+                            <input type="text" id="staffProfileId" class="form-control" placeholder="Enter Staff ID">
+                        </div>
+                        <div class="form-group">
+                            <label>Age</label>
+                            <input type="number" id="staffProfileAge" class="form-control" placeholder="Enter Age" min="18" max="100">
+                        </div>
+                        <div class="form-group">
+                            <label>Aadhaar Number</label>
+                            <input type="text" id="staffProfileAadhaar" class="form-control" placeholder="Enter 12-digit Aadhaar Number">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" id="staffProfilePhone" class="form-control" placeholder="Enter Phone Number">
+                        </div>
+                        <button class="btn" onclick="saveStaffProfile()">Save Profile Details</button>
+                    </div>
+                </div>
+
+                <!-- Profile Display Section (shown when profile exists) -->
+                <div id="staffProfileDisplaySection" class="hidden">
+                    <p><strong>Full Name:</strong> <span id="dispStaffName"></span></p>
+                    <p><strong>Staff ID / ERP ID:</strong> <span id="dispStaffId"></span></p>
+                    <p><strong>Age:</strong> <span id="dispStaffAge"></span></p>
+                    <p><strong>Aadhaar Number:</strong> <span id="dispStaffAadhaar"></span></p>
+                    <p><strong>Phone Number:</strong> <span id="dispStaffPhone"></span></p>
+                    <p style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted);">
+                        [Locked]  <strong style="color: var(--success);">Profile Registered</strong> (Editing is restricted to Administrator)
+                    </p>
+                </div>
+            </div>
+
+            <!-- Feature 8: Enrolled Staff List -->
+            <div id="staffFeatureStaffList" class="glass-panel hidden" style="margin-top: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                    <h3 style="margin:0;">Enrolled Staff</h3>
+                    <div class="input-wrapper" style="max-width: 300px; width: 100%; position: relative;">
+                        <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; pointer-events: none;"></span>
+                        <input type="text" id="enrolledStaffSearch" class="form-control" placeholder="Search Staff..." onkeyup="filterEnrolledStaff()" style="padding-left: 2.5rem;">
+                    </div>
+                </div>
+                <div class="fixed-scroll-container" style="margin-top: 0.5rem;">
+                    <table id="staffEnrolledTable" style="margin:0;">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Name</th>
+                                <th>Staff ID</th>
+                                <th>Age</th>
+                                <th>Aadhaar No</th>
+                                                                <th>Phone No</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Feature 10: Leave Management (Staff) -->
+            <div id="staffFeatureLeaves" class="glass-panel hidden" style="margin-top: 1rem;">
+                <h3>Leave Applications (My Class)</h3>
+                <ul id="staffLeaveList" style="list-style:none;padding:0;"></ul>
+                <p id="staffLeavesEmpty" class="hidden" style="color:var(--text-muted);">No leave applications yet.</p>
+            </div>
+
+            <!-- Feature 11: Week Courses -->
+            <div id="staffFeatureWeekCourses" class="glass-panel hidden" style="margin-top: 1rem;">
+                <h3>Create Week Course</h3>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end; margin-bottom: 1rem;">
+                    <div class="form-group" style="flex:1; min-width:200px;">
+                        <label for="courseTitle">Course Title</label>
+                        <input type="text" id="courseTitle" class="form-control" placeholder="Enter course title">
+                    </div>
+                    <div class="form-group" style="flex:1; min-width:120px;">
+                        <label for="courseWeeks">Total Weeks</label>
+                        <input type="number" id="courseWeeks" class="form-control" placeholder="e.g. 8" min="1">
+                    </div>
+                    <div class="form-group" style="flex:1; min-width:160px;">
+                        <label for="courseClass">Set Class</label>
+                        <select id="courseClass" class="form-control">
+                            <option value="">All Classes (visible to everyone)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="courseDesc">Description</label>
+                        <input type="text" id="courseDesc" class="form-control" placeholder="Short description" style="min-width:200px;">
+                    </div>
+                    <div class="form-group">
+                        <button class="btn" onclick="createWeekCourse()">Create Course</button>
+                    </div>
+                </div>
+
+                <h4 style="margin-top:1.5rem; margin-bottom:0.5rem;">My Week Courses</h4>
+                <ul id="weekCoursesList" style="list-style: none; padding: 0;"></ul>
+            </div>
+
+            <!-- Week Course Manager Modal -->
+            <div id="weekCourseModal" class="modal-overlay hidden" onclick="if(event.target===this)closeWeekCourseModal();">
+                <div class="modal-content" style="max-width: 900px; max-height: 85vh; overflow-y: auto;">
+                    <span class="modal-close" onclick="closeWeekCourseModal()">&times;</span>
+                    <h3 id="weekCourseModalTitle">Manage Course</h3>
+                    <p id="weekCourseInfo" style="color:var(--text-muted); font-size:0.9rem;"></p>
+
+                    <div style="margin-top:1rem;">
+                        <label for="weekSelector" style="font-size:13px; color:var(--text-muted); display:block; margin-bottom:4px;">Select Week</label>
+                        <select id="weekSelector" class="form-control" onchange="loadCourseWeekContent()">
+                            <option value="">-- Choose a week --</option>
+                        </select>
+                    </div>
+
+                    <div id="weekCourseContent" style="margin-top:1.5rem;"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====================================================================== -->
+        <!-- STUDENT DASHBOARD                                                      -->
+        <!-- ====================================================================== -->
+        <section id="studentSection" class="hidden animate-fade-in">
+            <h2 style="margin-bottom: 1rem;">Student Dashboard</h2>
+
+            <!-- Profile Update (shown when no details) -->
+            <div id="studentUpdateProfileSection" class="glass-panel">
+                <h3>Complete Your Profile</h3>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <div class="form-group" style="flex:1; min-width:200px;">
+                        <label>Full Name</label>
+                        <input type="text" id="stuName" class="form-control" placeholder="Your full name">
+                    </div>
+                    <div class="form-group" style="flex:1; min-width:150px;">
+                        <label>Class</label>
+                        <select id="stuClass" class="form-control">
+                            <option value="">Select your class</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex:1; min-width:150px;">
+                        <label>Phone</label>
+                        <input type="tel" id="stuPhone" class="form-control" placeholder="Phone number">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <textarea id="stuAddress" class="form-control" rows="2" placeholder="Your address"></textarea>
+                </div>
+                <button class="btn" onclick="updateStudentDetails()">Save Profile</button>
+            </div>
+
+            <!-- Profile Display (shown when details exist) -->
+            <div id="studentDisplayProfileSection" class="glass-panel hidden">
+                <h3>My Profile</h3>
+                <p><strong>Name:</strong> <span id="dispStuName"></span></p>
+                <p><strong>Class:</strong> <span id="dispStuClass"></span></p>
+                <p><strong>Phone:</strong> <span id="dispStuPhone"></span></p>
+                <p><strong>Address:</strong> <span id="dispStuAddress"></span></p>
+                <p style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted);">
+                    [Locked]  <strong style="color: var(--success);">Profile Registered</strong> (Editing is restricted to Administrator)
+                </p>
+                <div id="dispStuMentorSection" style="margin-top:1rem;padding-top:0.75rem;border-top:1px solid var(--card-border);">
+                    <strong style="color:var(--accent);">Mentor:</strong> <span id="dispStuMentor">Not assigned</span>
+                </div>
+            </div>
+
+            <!-- Leave Management (Student) -->
+            <div class="glass-panel" style="margin-top: 1rem;">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.75rem;">
+                    <h3 style="margin:0;">Apply for Leave</h3>
+                    <span id="leaveMentorChip" style="font-size:0.8rem;color:var(--text-muted);background:rgba(16,185,129,0.08);padding:4px 10px;border-radius:999px;">Mentor: --</span>
+                </div>
+                <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-end;margin-bottom:1rem;">
+                    <div class="form-group" style="flex:1;min-width:150px;">
+                        <label>Leave Type</label>
+                        <select id="leaveType" class="form-control">
+                            <option value="casual">Casual Leave</option>
+                            <option value="medical">Medical Leave</option>
+                            <option value="emergency">Emergency Leave</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex:2;min-width:200px;">
+                        <label>Reason</label>
+                        <input type="text" id="leaveReason" class="form-control" placeholder="Enter reason for leave">
+                    </div>
+                    <div class="form-group">
+                        <button class="btn" onclick="applyLeave()">Apply</button>
+                    </div>
+                </div>
+                <h4 style="margin-bottom:0.5rem;font-size:0.95rem;">My Leave Applications</h4>
+                <ul id="stuLeaveList" style="list-style:none;padding:0;"></ul>
+            </div>
+
+            <!-- Materials -->
+            <div class="glass-panel" style="margin-top: 1rem;">
+                <h3>Study Materials</h3>
+                <ul id="stuMaterials" style="list-style: none; padding: 0;"></ul>
+            </div>
+
+            <!-- Forms -->
+            <div class="glass-panel" style="margin-top: 1rem;">
+                <h3>Forms / Surveys</h3>
+                <ul id="stuForms" style="list-style: none; padding: 0;"></ul>
+            </div>
+
+            <!-- Assignments -->
+            <div class="glass-panel" style="margin-top: 1rem;">
+                <h3>Assignments & Grades</h3>
+                <div class="fixed-scroll-container">
+                    <ul id="stuAssignmentList" style="list-style: none; padding: 0;"></ul>
+                </div>
+            </div>
+
+            <!-- Grades Summary -->
+            <div class="glass-panel" style="margin-top: 1rem;">
+                <h3>My Grades</h3>
+                <!-- Professional Date/Month/Year filter box -->
+                <div class="date-setting-box" style="margin-bottom:1rem;">
+                    <label class="dsb-label">Filter by date</label>
+                    <div class="dsb-row">
+                        <div class="dsb-field">
+                            <select id="gradeDay" class="form-control"><option value="">Day</option></select>
+                        </div>
+                        <div class="dsb-field">
+                            <select id="gradeMonth" class="form-control"><option value="">Month</option></select>
+                        </div>
+                        <div class="dsb-field">
+                            <select id="gradeYear" class="form-control"><option value="">Year</option></select>
+                        </div>
+                        <div class="dsb-field wide">
+                            <button class="btn" onclick="filterStudentGrades()" style="width:100%; padding:8px 10px; font-size:13px;">Apply</button>
+                        </div>
+                        <div class="dsb-field wide">
+                            <button class="btn btn-secondary" onclick="resetGradeDateFilter()" style="width:100%; padding:8px 10px; font-size:13px;">Clear</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="studentGradesSummary" style="color:var(--text-muted); margin-bottom: 0.75rem;"></div>
+                <div class="fixed-scroll-container">
+                    <table id="studentGradesTable" style="margin:0;">
+                        <thead>
+                            <tr>
+                                <th>Assignment</th>
+                                <th>Staff</th>
+                                <th>Marks</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Quizzes (Student) -->
+            <div class="glass-panel" style="margin-top: 1rem;">
+                <h3>Available Quizzes</h3>
+                <div class="fixed-scroll-container">
+                                        <ul id="stuQuizList" style="list-style: none; padding: 0;"></ul>
+                </div>
+            </div>
+
+                        <!-- Week Courses (Student) -->
+            <div class="glass-panel" style="margin-top: 1rem;">
+                <h3>Week Courses</h3>
+                <ul id="stuWeekCourses" style="list-style: none; padding: 0;"></ul>
+            </div>
+
+            <!-- Topics (Student) -->
+            <div class="glass-panel" style="margin-top: 1rem;">
+                <h3>Topics</h3>
+                <div id="stuTopicsContainer" style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
+            </div>
+
+            <!-- Chat with Staff -->
+            <div class="glass-panel" style="margin-top: 1rem;">
+                <h3>Chat with Staff <span id="unreadBadge" class="badge badge-danger" style="display:none;font-size:0.7rem;vertical-align:middle;"></span></h3>
+                <ul id="staffChatList" style="list-style: none; padding: 0;"></ul>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ====================================================================== -->
+    <!-- STUDENT DETAIL MODAL                                                    -->
+    <!-- ====================================================================== -->
+    <div id="studentModal" class="modal-overlay hidden" onclick="if(event.target===this)closeStudentModal();">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeStudentModal()">&times;</span>
+            <h3>Student Details</h3>
+            <p><strong id="modalDNumber"></strong></p>
+            <p><strong>Name:</strong> <span id="modalName"></span></p>
+            <p><strong>Class:</strong> <span id="modalClass"></span></p>
+            <p><strong>Phone:</strong> <span id="modalPhone"></span></p>
+            <p><strong>Address:</strong> <span id="modalAddress"></span></p>
+            <input type="hidden" id="modalSelectedStudentId" value="">
+            <input type="hidden" id="modalSelectedStudentName" value="">
+            <div style="display:flex;gap:0.5rem;margin-top:1rem;">
+                <button id="modalLmsMsgBtn" class="btn" onclick="openStaffChatFromModal()" style="display:inline-flex;align-items:center;gap:4px;">💬 Chat Message in LMS</button>
+                <a id="modalWhatsAppBtn" href="#" target="_blank" class="btn" style="background-color:#25D366;display:inline-flex;align-items:center;gap:4px;text-decoration:none;">WhatsApp WhatsApp</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====================================================================== -->
+    <!-- CHAT MODAL                                                              -->
+    <!-- ====================================================================== -->
+    <div id="chatModal" class="modal-overlay hidden" onclick="if(event.target===this)closeChatModal();">
+        <div class="modal-content chat-modal-content">
+            <div class="chat-header">
+                <div>
+                    <strong id="chatContactName">Contact</strong>
+                    <div id="chatContactSubtitle" style="font-size:0.75rem;color:var(--text-muted);">Chatting...</div>
+                </div>
+                <div style="display:flex;gap:0.5rem;align-items:center;">
+                    <a id="chatWhatsAppBtn" href="#" target="_blank" class="btn" style="background-color:#25D366;padding:4px 10px;font-size:12px;text-decoration:none;display:none;">WhatsApp</a>
+                    <span class="modal-close" onclick="closeChatModal()">&times;</span>
+                </div>
+            </div>
+            <div id="chatMessages" class="chat-messages"></div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Type a message..." autocomplete="off" autocorrect="off" autocapitalize="sentences" enterkeyhint="send" onkeydown="if(event.key==='Enter')sendChatMessage();">
+                <label class="chat-file-label" title="Attach file">
+                    
+                    <input type="file" id="chatFileInput" style="display:none" onchange="chatFileName()">
+                </label>
+                <span id="chatFileName" style="font-size:11px;color:var(--text-muted);display:none;"></span>
+                <button onclick="sendChatMessage()" class="chat-send-btn"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====================================================================== -->
+    <!-- WEEK QUIZ PASSWORD MODAL (Student unlocks week quiz)                  -->
+    <!-- ====================================================================== -->
+    <div id="weekQuizPasswordModal" class="modal-overlay hidden" onclick="if(event.target===this)closeWeekQuizPasswordModal();">
+        <div class="modal-content" style="max-width: 420px; text-align: center;">
+            <span class="modal-close" onclick="closeWeekQuizPasswordModal()">&times;</span>
+            <h3>Quiz Password</h3>
+            <p id="weekQuizPasswordDesc" style="color:var(--text-muted); margin-bottom:1rem;"></p>
+            <input type="password" id="weekQuizPassword" class="form-control" placeholder="Enter password" style="margin-bottom:1rem;">
+            <button class="btn" onclick="verifyWeekQuizPassword()">Unlock Quiz</button>
+        </div>
+    </div>
+
+    <!-- ====================================================================== -->
+    <!-- QUIZ ATTEMPT MODAL (Student)                                           -->
+    <!-- ====================================================================== -->
+    <div id="quizAttemptModal" class="modal-overlay hidden" onclick="if(event.target===this)closeQuizAttemptModal();">
+        <div class="modal-content" style="max-width: 700px; max-height: 80vh; overflow-y: auto;">
+            <span class="modal-close" onclick="closeQuizAttemptModal()">&times;</span>
+            <h3 id="quizAttemptTitle">Attempt Quiz</h3>
+            <p id="quizAttemptDesc" style="color:var(--text-muted);margin-bottom:1rem;"></p>
+            <div id="quizAttemptQuestions"></div>
+            <button class="btn" onclick="submitQuizAttempt()" style="margin-top:1rem;width:100%;">Submit Quiz</button>
+        </div>
+    </div>
+
+    <!-- ====================================================================== -->
+    <!-- QUIZ RESULT MODAL (Student)                                            -->
+    <!-- ====================================================================== -->
+    <div id="quizResultModal" class="modal-overlay hidden" onclick="if(event.target===this)closeQuizResultModal();">
+        <div class="modal-content" style="max-width: 500px; text-align: center;">
+            <span class="modal-close" onclick="closeQuizResultModal()">&times;</span>
+            <h3 id="quizResultTitle">Quiz Result</h3>
+            <div id="quizResultScore" style="font-size: 3rem; font-weight: 700; margin: 1rem 0;"></div>
+            <p id="quizResultDetails" style="color:var(--text-muted);"></p>
+            <div id="quizResultAnswers" style="text-align:left; margin-top:1rem;"></div>
+                        <button class="btn btn-secondary" onclick="closeQuizResultModal()" style="margin-top:1rem;">Close</button>
+        </div>
+    </div>
+
+    <!-- ======================================================================= -->
+    <!-- STUDENT WEEK COURSE MODAL                                               -->
+    <!-- ======================================================================= -->
+    <div id="studentWeekCourseModal" class="modal-overlay hidden" onclick="if(event.target===this)closeStudentWeekCourseModal();">
+        <div class="modal-content" style="max-width: 800px; max-height: 80vh; overflow-y: auto;">
+            <span class="modal-close" onclick="closeStudentWeekCourseModal()">&times;</span>
+            <h3 id="studentWeekCourseTitle">Course</h3>
+            <p id="studentWeekCourseInfo" style="color:var(--text-muted);font-size:0.9rem;"></p>
+            <div id="studentWeekCourseContent" style="margin-top:1.5rem;"></div>
+        </div>
+    </div>
+
+    <!-- ====================================================================== -->
+    <!-- STAFF QUIZ RESULTS MODAL                                               -->
+    <!-- ====================================================================== -->
+    <div id="staffQuizResultsModal" class="modal-overlay hidden" onclick="if(event.target===this)closeStaffQuizResultsModal();">
+        <div class="modal-content" style="max-width: 700px; max-height: 80vh; overflow-y: auto;">
+            <span class="modal-close" onclick="closeStaffQuizResultsModal()">&times;</span>
+            <h3 id="staffQuizResultsTitle">Quiz Results</h3>
+            <p id="staffQuizResultsSummary" style="color:var(--text-muted);margin-bottom:0.5rem;"></p>
+            <div style="overflow-x:auto;">
+                <table id="staffQuizResultsTable" style="margin:0;">
+                    <thead>
+                        <tr>
+                            <th>D Number</th>
+                            <th>Name</th>
+                            <th>Score</th>
+                            <th>Submitted</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <button class="btn btn-secondary" onclick="closeStaffQuizResultsModal()" style="margin-top:1rem;">Close</button>
+        </div>
+    </div>
+
+    <!-- ====================================================================== -->
+    <!-- FILE PREVIEW MODAL (Submission Overlay)                                -->
+    <!-- ====================================================================== -->
+    <div id="filePreviewModal" class="modal-overlay hidden" onclick="if(event.target===this)closeFilePreview();">
+        <div class="modal-content" style="max-width: 800px; max-height: 85vh; overflow-y: auto;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                <h3 id="filePreviewTitle" style="margin:0;">File Preview</h3>
+                <span class="modal-close" onclick="closeFilePreview()">&times;</span>
+            </div>
+            <div id="filePreviewContent"></div>
+            <div style="text-align:center;margin-top:1rem;">
+                <a id="filePreviewDownload" href="#" target="_blank" class="btn btn-secondary" style="text-decoration:none;">⬇️ Download</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====================================================================== -->
+    <!-- ADMIN EDIT STUDENT MODAL                                                -->
+    <!-- ====================================================================== -->
+    <div id="adminEditStudentModal" class="modal-overlay hidden" onclick="if(event.target===this)closeAdminEditStudentModal();">
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="modal-close" onclick="closeAdminEditStudentModal()">&times;</span>
+            <h3>Edit Student Profile</h3>
+            <p><strong id="adminEditStudentDNumber" style="color: var(--accent);"></strong></p>
+            <input type="hidden" id="adminEditStudentId">
+            <div class="form-group" style="margin-top: 1rem;">
+                <label>Full Name</label>
+                <input type="text" id="adminEditStuName" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Class</label>
+                <select id="adminEditStuClass" class="form-control">
+                    <option value="">Select Class</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="tel" id="adminEditStuPhone" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Address</label>
+                <textarea id="adminEditStuAddress" class="form-control" rows="2"></textarea>
+            </div>
+            <button class="btn" onclick="saveStudentDetailsByAdmin()">Save Student Details</button>
+        </div>
+    </div>
+
+    <!-- ====================================================================== -->
+    <!-- ADMIN EDIT STAFF MODAL                                                  -->
+    <!-- ====================================================================== -->
+    <div id="adminEditStaffModal" class="modal-overlay hidden" onclick="if(event.target===this)closeAdminEditStaffModal();">
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="modal-close" onclick="closeAdminEditStaffModal()">&times;</span>
+            <h3>Edit Staff Profile</h3>
+            <p><strong id="adminEditStaffUsername" style="color: var(--accent);"></strong></p>
+            <input type="hidden" id="adminEditStaffUserId">
+            <div class="form-group" style="margin-top: 1rem;">
+                <label>Full Name</label>
+                <input type="text" id="adminEditStaffName" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Staff ID / ERP ID</label>
+                <input type="text" id="adminEditStaffIdCode" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Age</label>
+                <input type="number" id="adminEditStaffAge" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Aadhaar Number</label>
+                <input type="text" id="adminEditStaffAadhaar" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="tel" id="adminEditStaffPhone" class="form-control">
+            </div>
+            <button class="btn" onclick="saveStaffDetailsByAdmin()">Save Staff Details</button>
+        </div>
+    </div>
+
+<script src="app.js?v=2.0"></script>
+</body>
+</html>
+
+
+
+
+
+

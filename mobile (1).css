@@ -1,0 +1,647 @@
+/* =====================================================================
+   Nexus LMS — Professional Mobile & Responsive Design
+   Loaded after styles.css / css.css so these rules win on small screens.
+   ===================================================================== */
+
+/* ---------- Base touch & performance ---------- */
+@media (max-width: 767.98px) {
+    html {
+        font-size: 16px;
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+    }
+
+    body {
+        background: #f0f2f5;
+        font-size: 15px;
+        overscroll-behavior: none;
+    }
+
+    /* Never block text selection / keyboard focus on form fields.
+       (Some mobile browsers refuse to show the keyboard on a tap when the
+       input is inside a container that sets user-select:none.) */
+    input,
+    textarea,
+    select,
+    input[type="text"],
+    input[type="search"],
+    textarea,
+    .chat-input,
+    .wa-input-wrapper input {
+        -webkit-user-select: text !important;
+        user-select: text !important;
+        -webkit-touch-callout: default;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: rgba(0,0,0,0.1);
+    }
+
+    /* Prevent iOS auto-zoom on input focus (caused by font-size < 16px).
+       When the page zooms on tap the keyboard can appear to "not show". */
+    input,
+    textarea,
+    select {
+        font-size: 16px !important;
+        /* make room for the larger font so fields don't clip */
+        padding: 10px 12px;
+    }
+
+    /* Kill heavy blur / flicker animations on mobile for speed */
+    .glass-panel,
+    .modal-overlay,
+    .header {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+
+    /* Prevent hover transforms from sticking after touch (causes blurry text).
+       Only apply scale/translate hovers on devices with a real pointer (mouse/stylus). */
+    .btn:hover,
+    .staff-nav-btn:hover,
+    .day-btn:hover,
+    .fab-btn:hover,
+    .chat-send-btn:hover,
+    .msg-icon-btn:hover {
+        transform: none !important;
+        transition: none !important;
+    }
+
+    /* Remove tap highlight flash and ensure crisp text on interactive elements */
+    .btn,
+    .staff-nav-btn,
+    .day-btn,
+    .fab-btn,
+    .chat-send-btn,
+    .msg-icon-btn,
+    .toggle-btn {
+        -webkit-tap-highlight-color: transparent;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+}
+
+/* ---------- Login page: professional stacked card ---------- */
+@media (max-width: 767.98px) {
+    #authSection {
+        position: relative;
+        top: auto;
+        left: auto;
+        right: auto;
+        bottom: auto;
+        width: 100%;
+        height: 100%;
+        min-height: 100vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .login-container {
+        flex-direction: column;
+        height: auto;
+        max-width: 420px;
+        width: 100%;
+        margin: 0 auto;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+    }
+
+        .brand-panel {
+        width: 100%;
+        flex: none;
+        min-height: 150px;
+        max-height: 190px;
+        padding: 20px;
+        background: linear-gradient(135deg, #0b1e3f 0%, #123061 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Side Icon Logo - larger on mobile */
+    .brand-panel .brand-logo {
+        max-height: 250px;
+        max-width: 250px;
+        width: 250px;
+        height: 250px;
+        object-fit: contain;
+        border-radius: 16px;
+    }
+
+    /* Hide the top-right small logo on mobile (the side icon in brand panel replaces it) */
+    .logo-top-right {
+        display: none !important;
+    }
+
+    .form-panel {
+        width: 100%;
+        flex: none;
+        padding: 28px 22px 32px;
+    }
+
+    .form-content {
+        max-width: 100%;
+    }
+
+    .welcome-text {
+        font-size: 22px;
+        margin-bottom: 6px;
+    }
+    .subtitle-text {
+        font-size: 13.5px;
+        margin-bottom: 24px;
+    }
+
+    /* Prevent iOS auto-zoom: keep inputs >= 16px */
+    .input-wrapper input,
+    .form-control,
+    input[type="text"],
+    input[type="password"],
+    input[type="email"],
+    input[type="number"],
+    input[type="tel"],
+    input[type="date"],
+    input[type="datetime-local"],
+    textarea,
+    select {
+        font-size: 16px !important;
+        padding: 13px 14px;
+        min-height: 46px;
+    }
+
+    .input-group {
+        margin-bottom: 16px;
+    }
+
+    .login-btn {
+        min-height: 48px;
+        font-size: 16px;
+        border-radius: 12px;
+    }
+
+    .options-row {
+        margin-bottom: 20px;
+    }
+
+    .auth-toggle-link {
+        margin-top: 16px;
+        font-size: 13px;
+    }
+}
+
+/* ---------- Header ---------- */
+@media (max-width: 767.98px) {
+    .header {
+        padding: 10px 14px;
+        background: #ffffff;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        position: sticky;
+        top: 0;
+        z-index: 900;
+    }
+
+    /* Larger logo icon in the header on mobile */
+    #headerLogo {
+        height: 42px !important;
+        width: 42px !important;
+        border-radius: 10px !important;
+    }
+
+    .header h1 {
+        font-size: 18px;
+    }
+
+    .header .badge {
+        font-size: 10px;
+    }
+
+    .header .btn {
+        padding: 8px 12px;
+        font-size: 12px;
+        min-height: 36px;
+    }
+}
+
+/* ---------- Container & panels ---------- */
+@media (max-width: 767.98px) {
+    .container {
+        padding: 12px;
+        max-width: 100%;
+    }
+
+    .glass-panel {
+        padding: 16px;
+        border-radius: 14px;
+        margin-top: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    h2 {
+        font-size: 20px;
+        margin-bottom: 14px !important;
+    }
+    h3 {
+        font-size: 16.5px;
+        margin-bottom: 10px !important;
+    }
+    h4 {
+        font-size: 14.5px;
+    }
+
+    .grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+    }
+    .grid .card {
+        padding: 16px;
+    }
+}
+
+/* ---------- Buttons / controls: touch friendly ---------- */
+@media (max-width: 767.98px) {
+    .btn {
+        min-height: 40px;
+        padding: 10px 16px;
+        font-size: 14px;
+        border-radius: 10px;
+    }
+
+    .btn-secondary {
+        background: #f3f4f6;
+        border-color: #e5e7eb;
+    }
+
+    .form-group {
+        margin-bottom: 14px;
+    }
+    .form-group label {
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
+
+    /* Staff quick-nav: horizontal scroll pills (direct toolbar only —
+       must NOT match form rows inside feature panels) */
+    .staff-nav-btn {
+        flex: 0 0 auto;
+        white-space: nowrap;
+        padding: 10px 16px;
+        font-size: 13px;
+        min-height: 40px;
+    }
+    #staffSection > .glass-panel > div[style*="flex"] {
+        display: flex;
+        gap: 8px;
+        flex-wrap: nowrap !important;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 4px;
+        scrollbar-width: thin;
+    }
+    #staffSection > .glass-panel > div[style*="flex"]::-webkit-scrollbar {
+        height: 4px;
+    }
+    #staffSection > .glass-panel > div[style*="flex"]::-webkit-scrollbar-thumb {
+        background: #c3ccd6;
+        border-radius: 4px;
+    }
+
+    /* ---- Stack form rows in every staff feature panel ---- */
+    [id^="staffFeature"] div[style*="flex-wrap: wrap"] {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 10px !important;
+    }
+    [id^="staffFeature"] div[style*="flex-wrap: wrap"] > .form-group,
+    [id^="staffFeature"] div[style*="flex-wrap: wrap"] > div {
+        width: 100% !important;
+        min-width: 0 !important;
+        flex: none !important;
+    }
+    [id^="staffFeature"] div[style*="flex-wrap: wrap"] .btn {
+        width: 100%;
+        min-height: 42px;
+    }
+    /* Day-order buttons (A-F): evenly spread, touch friendly */
+    [id^="staffFeature"] div[style*="gap:4px"] {
+        width: 100%;
+    }
+    .day-btn {
+        flex: 1 1 0;
+        min-width: 42px;
+        min-height: 42px;
+        font-size: 15px;
+    }
+
+    /* ---- Stack form rows in student dashboard panels ---- */
+    #studentSection div[style*="flex-wrap: wrap"] {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 10px !important;
+    }
+    #studentSection div[style*="flex-wrap: wrap"] > .form-group {
+        width: 100% !important;
+        min-width: 0 !important;
+        flex: none !important;
+    }
+    #studentSection div[style*="flex-wrap: wrap"] .btn {
+        width: 100%;
+        min-height: 42px;
+    }
+}
+
+/* ---------- Tables: horizontal scroll, no page overflow ---------- */
+@media (max-width: 767.98px) {
+    table {
+        min-width: 520px;
+    }
+    .fixed-scroll-container,
+    div[style*="overflow-x: auto"],
+    div[style*="overflow-y: auto"] {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+    th, td {
+        white-space: nowrap;
+    }
+}
+
+/* ---------- Modals: full-screen sheet on mobile ---------- */
+@media (max-width: 767.98px) {
+    .modal-overlay {
+        padding: 0;
+        align-items: flex-end;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.5);
+        animation: none !important;
+    }
+
+    .modal-overlay > .modal-content {
+        width: 100%;
+        max-width: 100%;
+        max-height: 92vh;
+        max-height: 100dvh;
+        border-radius: 20px 20px 0 0;
+        padding: 24px 18px 20px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.2);
+        animation: slideUp 0.25s ease;
+        padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .modal-overlay > .modal-content .modal-close {
+        top: 12px;
+        right: 16px;
+    }
+
+    /* Chat: true full-screen */
+    .modal-overlay > .chat-modal-content {
+        max-height: 100vh;
+        max-height: 100dvh;
+        height: 100vh;
+        height: 100dvh;
+        border-radius: 0;
+    }
+
+    .chat-messages {
+        padding: 14px 12px;
+    }
+
+    .chat-input-are25ucs909a {
+        padding: 5px 8px calc(8px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .chat-input,
+    #chatInput,
+    #chatInput.chat-input {
+        font-size: 14px !important;
+        padding: 8px 12px;
+    }
+
+    .chat-send-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+
+    /* Week course modal */
+    #weekCourseModal > .modal-content {
+        padding: 20px 14px 16px;
+    }
+    #weekCourseModal #weekCourseContent {
+        display: block;
+    }
+    #weekCourseModal #weekCourseContent > div {
+        width: 100% !important;
+        margin-bottom: 1rem;
+    }
+    #weekCourseModal #weekCourseContent form > div {
+        flex-wrap: wrap !important;
+    }
+    #weekCourseModal #weekCourseContent .form-group {
+        flex: 1 1 140px !important;
+        min-width: 140px !important;
+    }
+
+    /* Student week course modal */
+    #studentWeekCourseModal > .modal-content {
+        padding: 20px 14px 16px;
+    }
+}
+
+/* ---------- Notifications: toast top-center on mobile ---------- */
+@media (max-width: 767.98px) {
+    #notification {
+        bottom: auto;
+        top: 14px;
+        left: 50%;
+        right: auto;
+        transform: translate(-50%, -140%);
+        width: calc(100% - 28px);
+        max-width: 480px;
+        text-align: center;
+        border-radius: 12px;
+        font-size: 14px;
+        padding: 14px 18px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    }
+    #notification.show {
+        transform: translate(-50%, 0);
+    }
+}
+
+/* ---------- Disable animations on mobile for speed ---------- */
+@media (max-width: 767.98px) {
+    .animate-fade-in,
+    .modal-overlay,
+    .chat-page,
+    .chat-page-header {
+        animation: none !important;
+    }
+}
+
+/* ---------- Fix chat list / inbox item spacing ---------- */
+@media (max-width: 767.98px) {
+    #staffChatList li,
+    #staffInboxMessages li,
+    #staffLeaveList li,
+    #stuLeaveList li {
+        padding: 12px !important;
+        margin-bottom: 8px !important;
+        border-radius: 12px !important;
+    }
+
+    .msg-icon-btn {
+        width: 40px;
+        height: 40px;
+        justify-content: center;
+    }
+}
+
+/* ---------- Attendance list: compact rows, toggle near name ---------- */
+@media (max-width: 767.98px) {
+    #attendanceTable {
+        min-width: 0 !important;
+        width: 100%;
+        display: block;
+    }
+    /* Hide the wide header row — each card is self-explanatory */
+    #attendanceTable thead {
+        display: none;
+    }
+    #attendanceTable tbody {
+        display: block;
+    }
+    #attendanceTable tbody tr {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        margin-bottom: 8px;
+        background: rgba(255, 255, 255, 0.6);
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        border-radius: 12px;
+    }
+    #attendanceTable td {
+        display: block;
+        padding: 0 !important;
+        border: none !important;
+        white-space: normal !important;
+    }
+    .att-name {
+        font-size: 14.5px;
+        font-weight: 600;
+        line-height: 1.3;
+    }
+    .att-dno {
+        font-size: 11.5px;
+        color: #6b7280;
+        margin-top: 2px;
+    }
+    .att-toggle-cell {
+        flex-shrink: 0;
+    }
+    .attendance-toggle .toggle-btn {
+        padding: 7px 14px;
+        font-size: 13px;
+        min-width: 86px;
+        text-align: center;
+    }
+}
+
+/* ---------- Desktop: fix Week Courses 2-column alignment ---------- */
+@media (min-width: 768px) {
+    #weekCourseContent > div {
+        align-items: flex-start;
+    }
+    #weekCourseContent form {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    #weekCourseContent form > div {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    #weekCourseContent form .btn {
+        align-self: flex-start;
+        margin-top: 4px;
+    }
+    #weekCourseContent form .form-group {
+        margin-bottom: 8px;
+    }
+        #weekCourseContent form input,
+    #weekCourseContent form select,
+    #weekCourseContent form textarea {
+        font-size: 13.5px;
+    }
+}
+
+/* ---------- Mobile FAB Navigation (bottom dock) ---------- */
+.mobile-fab-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: none;
+    justify-content: space-around;
+    align-items: center;
+    padding: 8px 10px calc(8px + env(safe-area-inset-bottom, 0px));
+    background: rgba(255, 255, 255, 0.97);
+    border-top: 1px solid var(--card-border);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+    z-index: 999;
+}
+
+.mobile-fab-nav .fab-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.1s, background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Material Icons', sans-serif;
+}
+
+.mobile-fab-nav .fab-btn:hover {
+    transform: scale(1.1);
+}
+
+.mobile-fab-nav .fab-btn.fab-active {
+    background: var(--primary, #1e3a8a);
+}
+
+@media (max-width: 768px) {
+    .mobile-fab-nav {
+        display: flex;
+    }
+    /* Adjust main content padding for FAB on mobile */
+    #studentSection,
+    #staffSection,
+    #adminSection {
+        padding-bottom: 70px;
+    }
+}
+
+/* ---------- Topic cards ---------- */
+@media (max-width: 767.98px) {
+    .topic-card {
+        min-width: 130px !important;
+        padding: 16px !important;
+    }
+}

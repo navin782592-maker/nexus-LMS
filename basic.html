@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Premium Login</title>
+    <!-- Google Fonts & FontAwesome for Premium Icons -->
+    <link href="https://googleapis.com" rel="stylesheet">
+    <link rel="stylesheet" href="https://cloudflare.com">
+    
+    <style>
+        /* MODERN SYSTEM RESET */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        /* GLASSMORPHISM CARD DESIGN */
+        .login-card {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 420px;
+            transition: transform 0.3s ease;
+        }
+
+        .login-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .header h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 14px;
+            color: #71717a;
+            margin-bottom: 32px;
+        }
+
+        /* PREMIUM INPUT FIELDS */
+        .input-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4b5563;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper i.input-icon {
+            position: absolute;
+            left: 16px;
+            color: #9ca3af;
+            font-size: 18px;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 14px 16px 14px 48px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 15px;
+            outline: none;
+            background: #f9fafb;
+            transition: all 0.3s ease;
+        }
+
+        /* Real Human Interactions (Focus states) */
+        .input-wrapper input:focus {
+            background: #ffffff;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+
+        /* Password Toggle Icon */
+        .toggle-password {
+            position: absolute;
+            right: 16px;
+            color: #9ca3af;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .toggle-password:hover {
+            color: #4f46e5;
+        }
+
+        /* DYNAMIC VALIDATION STATES */
+        .input-wrapper.invalid input {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+        .input-wrapper.invalid input:focus {
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+        }
+
+        .input-wrapper.valid input {
+            border-color: #22c55e;
+            background: #f0fdf4;
+        }
+
+        .error-hint {
+            color: #ef4444;
+            font-size: 12px;
+            margin-top: 6px;
+            display: none;
+            font-weight: 500;
+        }
+
+        /* INTERACTIVE BUTTON */
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: #4f46e5;
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+        }
+
+        .login-btn:hover {
+            background-color: #4338ca;
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.3);
+        }
+
+        .login-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* FOOTER OPTIONS */
+        .form-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 24px;
+            font-size: 14px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #4b5563;
+            cursor: pointer;
+        }
+
+        .remember-me input {
+            accent-color: #4f46e5;
+            width: 16px;
+            height: 16px;
+        }
+
+        .forgot-link {
+            color: #4f46e5;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="header">
+            <h2>Welcome back</h2>
+            <p>Please enter your details to sign in.</p>
+        </div>
+
+        <form id="authForm" novalidate>
+            <!-- Username/Email Field -->
+            <div class="input-group">
+                <label for="username">Username</label>
+                <div class="input-wrapper">
+                    <i class="fa-regular fa-user input-icon"></i>
+                    <input type="text" id="username" placeholder="Enter your username" required>
+                </div>
+            </div>
+            
+            <!-- Password Field with View Eye Toggle -->
+            <div class="input-group">
+                <label for="password">Password</label>
+                <div class="input-wrapper" id="passWrapper">
+                    <i class="fa-solid fa-lock input-icon"></i>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                    <i class="fa-regular fa-eye toggle-password" id="eyeIcon"></i>
+                </div>
+                <div id="validationHint" class="error-hint">
+                    <i class="fa-solid fa-circle-exclamation"></i> Password needs 8+ characters, an uppercase letter & a number.
+                </div>
+            </div>
+
+            <!-- Contextual Options -->
+            <div class="form-footer">
+                <label class="remember-me">
+                    <input type="checkbox"> Remember me
+                </label>
+                <a href="#" class="forgot-link">Forgot password?</a>
+            </div>
+            
+            <br>
+            <button type="submit" class="login-btn">Sign In</button>
+        </form>
+    </div>
+
+    <script>
+        const passwordInput = document.getElementById('password');
+        const passWrapper = document.getElementById('passWrapper');
+        const eyeIcon = document.getElementById('eyeIcon');
+        const validationHint = document.getElementById('validationHint');
+        const authForm = document.getElementById('authForm');
+
+        // 1. Password Visibility Eye Toggle 
+        eyeIcon.addEventListener('click', () => {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        });
+
+        // 2. Real-time Live Human Validation Look & Feel
+        passwordInput.addEventListener('input', () => {
+            const val = passwordInput.value;
+            
+            if(val === "") {
+                passWrapper.classList.remove('valid', 'invalid');
+                validationHint.style.display = 'none';
+                return;
+            }
+
+            const isValid = val.length >= 8 && /[A-Z]/.test(val) && /[0-9]/.test(val);
+
+            if (isValid) {
+                passWrapper.classList.remove('invalid');
+                passWrapper.classList.add('valid');
+                validationHint.style.display = 'none';
+            } else {
+                passWrapper.classList.remove('valid');
+                passWrapper.classList.add('invalid');
+                validationHint.style.display = 'block';
+            }
+        });
+
+        // 3. Form Submission Handling
+        authForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const val = passwordInput.value;
+            const isValid = val.length >= 8 && /[A-Z]/.test(val) && /[0-9]/.test(val);
+
+            if(isValid && document.getElementById('username').value.trim() !== "") {
+                alert('🎉 Login successful! Welcome back.');
+            } else {
+                if(!isValid) {
+                    passWrapper.classList.add('invalid');
+                    validationHint.style.display = 'block';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
